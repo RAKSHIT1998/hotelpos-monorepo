@@ -1,1 +1,0 @@
-import{parsePhoneNumberFromString}from'libphonenumber-js';export function normalizePhone(raw,defaultCountry='IN'){if(!raw)return{raw:null,e164:null};const p=parsePhoneNumberFromString(String(raw),defaultCountry);return{raw:String(raw),e164:p&&p.isValid()?p.number:null}}export function sum(arr){return arr.reduce((a,b)=>a+b,0)}
