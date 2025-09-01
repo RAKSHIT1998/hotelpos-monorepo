@@ -1,47 +1,53 @@
-# HotelPOS Monorepo (Backend API + Web UI & Admin)
+# Hotelpos (Monorepo) — API + Web (Admin & App)
 
-This repo contains:
-- `api/` — Node/Express + Prisma API (Render-ready, PostgreSQL, Ed25519 invoice signatures, OTA stubs)
-- `web/` — Next.js (pages router) with **Hotel App** and **Admin Console**
+This repo is ready for:
+- **Render** (API) via `render.yaml` (blueprint) — one-click deploy.
+- **Vercel** (Web UI) — import `web/` as a project.
 
-## Deploy Overview (production, zero guesswork)
+## Structure
+```
+api/   # Node/Express + Prisma (Postgres), Dockerfile, Ed25519 invoice signing, OTA creds/mappings
+web/   # Next.js (hotel app + admin console)
+render.yaml  # Render blueprint for the API
+```
 
-### Database (Neon)
-1. Create a project at https://neon.tech → copy **DATABASE_URL**.
+## Deploy — Real Life
 
-### Backend (Render)
-1. Connect this repo → New Web Service.
-2. **Environment:** Docker · **Root Directory:** `api` · Build/Start commands: leave **blank**.
-3. Set env vars (Render → Environment):
-   - `DATABASE_URL` (from Neon)
-   - `JWT_SECRET` = `openssl rand -hex 32`
-   - `ROOT_ADMIN_KEY` = `openssl rand -hex 32`
-   - `PII_AES_KEY` = `openssl rand -hex 32` (64 hex chars)
-   - `SIGN_SEED_HEX` = `openssl rand -hex 32` (64 hex chars)
-   - `PUBLIC_BASE_URL` = `https://api.hotelpos.in` (or Render URL first)
-   - (optional) `AWS_REGION`, `S3_BUCKET` for logo uploads
-4. Deploy → open `/health` to verify.
+### 1) Database (Neon recommended)
+- Create a project at https://neon.tech
+- Copy `DATABASE_URL`
 
-### Frontend (Vercel)
-1. Import **`web/`** as a project (Root Directory = `web`).
-2. Add env:
-   - `NEXT_PUBLIC_BACKEND_URL` = `https://api.hotelpos.in` (or your Render URL)
-3. Deploy.
-4. Add domains in Vercel → `app.hotelpos.in`, `admin.hotelpos.in` (both pointing to same project).
+### 2) API on Render (Blueprint)
+- On Render → **New → Blueprint** → connect this repo → Deploy.
+- The blueprint creates a **web service** for the API using Docker.
+- After deploy, open `/health` on the service URL.
 
-### Hostinger DNS
-Add **CNAME** records:
-- `api` → Render’s domain for your API
+**Environment variables to set in Render (post-deploy):**
+- `DATABASE_URL`        (from Neon)
+- `JWT_SECRET`          = `openssl rand -hex 32`
+- `ROOT_ADMIN_KEY`      = `openssl rand -hex 32`
+- `PII_AES_KEY`         = `openssl rand -hex 32` (64 hex chars)
+- `SIGN_SEED_HEX`       = `openssl rand -hex 32` (64 hex chars)
+- `PUBLIC_BASE_URL`     = e.g. `https://api.hotelpos.in`
+- (optional) `AWS_REGION`, `S3_BUCKET` for logo uploads
+
+> The **start command is pinned** in the blueprint so Render won’t try to run `"."` again.
+
+### 3) Web UI on Vercel
+- Import this GitHub repo as a new project, **Root Directory = `web`**
+- Environment → `NEXT_PUBLIC_BACKEND_URL` = your Render API URL or `https://api.hotelpos.in`
+- Deploy, then add domains:
+  - `app.hotelpos.in`
+  - `admin.hotelpos.in`
+
+### 4) Hostinger DNS
+Add **CNAME**:
+- `api` → the Render service domain
 - `app` → `cname.vercel-dns.com`
 - `admin` → `cname.vercel-dns.com`
 
-### Bootstrap first tenant
+### 5) Bootstrap a hotel (admin + 365-day subscription)
 ```bash
 curl -sS -X POST "$PUBLIC_BASE_URL/api/admin/issue-tenant"   -H "x-admin-key: $ROOT_ADMIN_KEY" -H "content-type: application/json"   -d '{"name":"Demo Hotel","email":"owner@hotelpos.in","baseCurrency":"INR"}'
 ```
-
-Login:
-- Admin console → `https://admin.hotelpos.in/admin`
-- Hotel app → `https://app.hotelpos.in/`
-
-Use the email + temp password returned in the bootstrap call.
+Use the returned email + temp password to sign in on the web app.

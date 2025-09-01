@@ -1,0 +1,30 @@
+\
+services:
+  - type: web
+    name: hotelpos-api
+    env: docker
+    rootDir: api
+    autoDeploy: true
+    healthCheckPath: /health
+    plan: free
+    startCommand: >
+      /bin/sh -lc "npx prisma generate && if [ -f prisma/schema.prisma ] && [ -n \"$DATABASE_URL\" ];
+      then npx prisma migrate deploy || npx prisma db push || true; fi;
+      node src/index.mjs"
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ROOT_ADMIN_KEY
+        sync: false
+      - key: PII_AES_KEY
+        sync: false
+      - key: SIGN_SEED_HEX
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: S3_BUCKET
+        sync: false

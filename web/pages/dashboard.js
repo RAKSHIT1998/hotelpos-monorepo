@@ -1,12 +1,1 @@
-import Link from 'next/link'
-export default function Dashboard(){
-  return <div style={{maxWidth:900, margin:'2rem auto'}}>
-    <h1>Hotel Dashboard</h1>
-    <ul>
-      <li><Link href="/rooms">Manage Rooms</Link></li>
-      <li><Link href="/customers">Customers</Link></li>
-      <li><Link href="/invoice">Create Invoice</Link></li>
-      <li><Link href="/rate-plans">Rate Plans</Link></li>
-    </ul>
-  </div>
-}
+import Link from 'next/link';export default function D(){return <div style={{maxWidth:900,margin:'2rem auto'}}><h1>Hotel Dashboard</h1><ul><li><Link href='/rooms'>Manage Rooms</Link></li><li><Link href='/customers'>Customers</Link></li><li><Link href='/invoice'>Create Invoice</Link></li><li><Link href='/rate-plans'>Rate Plans</Link></li></ul></div>}
